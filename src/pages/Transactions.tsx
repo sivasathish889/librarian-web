@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card } from '../components/ui/Card';
 import { useGetTransactionsQuery } from '../store/features/apiSlice';
 
@@ -18,11 +18,10 @@ export const Transactions = () => {
           <button
             key={tab}
             onClick={() => setFilter(tab)}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-              filter === tab
+            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${filter === tab
                 ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
                 : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
-            }`}
+              }`}
           >
             {tab === 'ALL' ? 'All' : tab.charAt(0) + tab.slice(1).toLowerCase()}
           </button>
@@ -57,11 +56,10 @@ export const Transactions = () => {
                 <td className="p-4 text-sm text-slate-600">{new Date(tx.issueDate).toLocaleDateString()}</td>
                 <td className="p-4 text-sm text-slate-600">{tx.returnDate ? new Date(tx.returnDate).toLocaleDateString() : '—'}</td>
                 <td className="p-4">
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                    tx.status === 'ISSUED' ? 'bg-blue-100 text-blue-700' :
-                    tx.status === 'RETURNED' ? 'bg-emerald-100 text-emerald-700' :
-                    tx.status === 'MISSING' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'
-                  }`}>
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${tx.status === 'ISSUED' ? 'bg-blue-100 text-blue-700' :
+                      tx.status === 'RETURNED' ? 'bg-emerald-100 text-emerald-700' :
+                        tx.status === 'MISSING' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'
+                    }`}>
                     {tx.status}
                   </span>
                 </td>

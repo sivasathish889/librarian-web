@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card } from '../components/ui/Card';
 import { useGetReturnedBooksQuery } from '../store/features/apiSlice';
-import { Search, BookOpen, Clock, RotateCcw, ChevronLeft, ChevronRight, User, Hash, Calendar } from 'lucide-react';
+import { Search, BookOpen, Clock, RotateCcw, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 
 const LIMIT = 25;
 
@@ -195,11 +195,10 @@ export const ReturnedBooks = () => {
                   <button
                     key={pageNum}
                     onClick={() => handlePageChange(pageNum)}
-                    className={`w-10 h-10 rounded-xl text-sm font-bold transition-all shadow-sm active:scale-95 ${
-                      pageNum === page
+                    className={`w-10 h-10 rounded-xl text-sm font-bold transition-all shadow-sm active:scale-95 ${pageNum === page
                         ? 'bg-[#1e3a8a] text-white'
                         : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
-                    }`}
+                      }`}
                   >
                     {pageNum}
                   </button>

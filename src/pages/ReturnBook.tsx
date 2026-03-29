@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Card } from '../components/ui/Card';
 import { useLazySearchStudentsQuery, useLazyGetIssuedBooksByUserQuery, useReturnBookMutation } from '../store/features/apiSlice';
 import { addToast } from '../store/features/toastSlice';
-import { Search, User, BookOpen, CheckCircle, ArrowRight, Loader2, Hash, Building2, RotateCcw, Calendar, Clock } from 'lucide-react';
+import { User, BookOpen, CheckCircle, ArrowRight, Loader2, Hash, Building2, RotateCcw, Calendar, Clock } from 'lucide-react';
 
 interface Student {
   id: number;
