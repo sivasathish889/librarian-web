@@ -148,6 +148,28 @@ export const apiSlice = createApi({
       providesTags: ['Transactions'],
     }),
 
+    // Get missing books with server-side search + pagination
+    getMissingBooks: builder.query<any, { page?: number; limit?: number; search?: string }>({
+      query: ({ page = 1, limit = 25, search = '' }) => {
+        const params = new URLSearchParams();
+        params.set('page', String(page));
+        params.set('limit', String(limit));
+        if (search) params.set('search', search);
+        return `/transactions/missing?${params.toString()}`;
+      },
+      providesTags: ['Transactions'],
+    }),
+
+    // Mark book as missing (manual entry)
+    markBookMissingManual: builder.mutation<any, { userId: number; bookId: number; fineAmount: number }>({
+      query: (body) => ({
+        url: '/transactions/missing-manual',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Books', 'Transactions', 'Dashboard'],
+    }),
+
     // Login
     login: builder.mutation<{ user: any; token: string }, { email: string; password: string }>({
       query: (credentials) => ({
@@ -170,6 +192,8 @@ export const {
   useGetDashboardQuery,
   useGetIssuedBooksQuery,
   useGetBooksQuery,
+  useGetMissingBooksQuery,
+  useMarkBookMissingManualMutation,
   useCreateBookMutation,
   useUpdateBookMutation,
   useDeleteBookMutation,
