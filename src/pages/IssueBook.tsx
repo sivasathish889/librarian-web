@@ -18,7 +18,7 @@ interface Book {
   id: number;
   title: string;
   author: string;
-  bookCode: string;
+  accessionNumbers?: string[];
   stock: number;
   rackNumber: string | null;
 }
@@ -284,7 +284,7 @@ export const IssueBook = () => {
                     >
                       <div>
                         <p className="font-semibold text-slate-800 text-sm">{b.title}</p>
-                        <p className="text-xs text-slate-500">{b.author} • <span className="font-mono">{b.bookCode}</span></p>
+                        <p className="text-xs text-slate-500">{b.author}{b.accessionNumbers && b.accessionNumbers.length > 0 ? ` • ${b.accessionNumbers.join(', ')}` : ''}</p>
                       </div>
                       <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${b.stock > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
                         }`}>
@@ -334,7 +334,7 @@ export const IssueBook = () => {
                   <div>
                     <p className="font-semibold text-slate-800">{selectedBook.title}</p>
                     <p className="text-sm text-slate-500">{selectedBook.author}</p>
-                    <p className="text-xs text-slate-400 font-mono mt-1">{selectedBook.bookCode}{selectedBook.rackNumber ? ` • Rack: ${selectedBook.rackNumber}` : ''}</p>
+                    <p className="text-xs text-slate-400 font-mono mt-1">{(selectedBook.accessionNumbers || []).join(', ')}{selectedBook.rackNumber ? ` • Rack: ${selectedBook.rackNumber}` : ''}</p>
                   </div>
                   <button onClick={() => { setSelectedBook(null); setStep(2); }} className="text-xs text-blue-500 hover:underline">Change</button>
                 </div>

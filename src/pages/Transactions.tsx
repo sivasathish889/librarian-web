@@ -52,7 +52,7 @@ export const Transactions = () => {
                   <span className="text-xs text-slate-500 block">{tx.user?.email}</span>
                 </td>
                 <td className="p-4 text-slate-600">{tx.book?.title}</td>
-                <td className="p-4 font-mono text-sm">{tx.book?.bookCode}</td>
+                <td className="p-4 font-mono text-sm">{tx.bookCopy?.accessionNo || tx.book?.accessionNumbers?.[0] || '—'}</td>
                 <td className="p-4 text-sm text-slate-600">{new Date(tx.issueDate).toLocaleDateString()}</td>
                 <td className="p-4 text-sm text-slate-600">{tx.returnDate ? new Date(tx.returnDate).toLocaleDateString() : '—'}</td>
                 <td className="p-4">

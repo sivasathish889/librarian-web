@@ -17,11 +17,15 @@ interface Student {
 interface IssuedTransaction {
   id: number;
   issueDate: string;
+  bookCopy?: {
+    id: number;
+    accessionNo: string;
+  };
   book: {
     id: number;
     title: string;
     author: string;
-    bookCode: string;
+    accessionNumbers?: string[];
     rackNumber: string | null;
   };
 }
@@ -301,7 +305,7 @@ export const ReturnBook = () => {
                             <div className="min-w-0">
                               <p className="font-semibold text-slate-800 text-sm truncate">{tx.book.title}</p>
                               <div className="flex items-center gap-2 text-xs text-slate-500">
-                                <span className="font-mono">{tx.book.bookCode}</span>
+                                <span className="font-mono">{tx.bookCopy?.accessionNo || tx.book.accessionNumbers?.[0] || '—'}</span>
                                 <span>•</span>
                                 <span className="flex items-center gap-1">
                                   <Calendar className="w-3 h-3" />
@@ -355,7 +359,7 @@ export const ReturnBook = () => {
                     <p className="font-semibold text-slate-800">{selectedTransaction.book.title}</p>
                     <p className="text-sm text-slate-500">{selectedTransaction.book.author}</p>
                     <div className="flex items-center gap-3 mt-1">
-                      <span className="text-xs text-slate-400 font-mono">{selectedTransaction.book.bookCode}</span>
+                      <span className="text-xs text-slate-400 font-mono">{selectedTransaction.bookCopy?.accessionNo || selectedTransaction.book.accessionNumbers?.[0] || '—'}</span>
                       <span className="flex items-center gap-1 text-xs text-slate-400">
                         <Clock className="w-3 h-3" />
                         {getDaysOut(selectedTransaction.issueDate)} days out

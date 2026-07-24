@@ -178,7 +178,7 @@ export const MissingBooks = () => {
                             </div>
                             <div>
                               <p className="text-sm font-bold text-slate-800">{b.title}</p>
-                              <p className="text-[10px] text-slate-500">{b.bookCode}</p>
+                              <p className="text-[10px] text-slate-500">{b.accessionNumbers?.join(', ') || '—'}</p>
                             </div>
                           </div>
                         ))}
@@ -191,7 +191,7 @@ export const MissingBooks = () => {
                       <BookIcon className="w-5 h-5 text-emerald-500" />
                       <div>
                         <p className="text-sm font-bold text-emerald-900">{selectedBook.title}</p>
-                        <p className="text-xs text-emerald-700">{selectedBook.bookCode}</p>
+                        <p className="text-xs text-emerald-700">{selectedBook.accessionNumbers?.join(', ') || '—'}</p>
                       </div>
                     </div>
                     <button 
@@ -279,7 +279,7 @@ export const MissingBooks = () => {
                       </td>
                       <td className="p-4">
                         <p className="text-sm font-semibold text-slate-700">{tx.book?.title}</p>
-                        <p className="text-[10px] font-mono text-slate-500">{tx.book?.bookCode}</p>
+                        <p className="text-[10px] font-mono text-slate-500">{tx.bookCopy?.accessionNo || tx.book?.accessionNumbers?.[0] || '—'}</p>
                       </td>
                       <td className="p-4 text-sm text-slate-500">
                         {new Date(tx.updatedAt).toLocaleDateString()}

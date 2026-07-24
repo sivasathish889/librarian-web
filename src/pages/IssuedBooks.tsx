@@ -171,7 +171,7 @@ export const IssuedBooks = () => {
                     </td>
                     <td className="px-4 py-3 font-mono text-sm text-slate-600 truncate">{tx.user?.registerNumber || '—'}</td>
                     <td className="px-4 py-3 text-slate-700 font-medium truncate">{tx.book?.title}</td>
-                    <td className="px-4 py-3 font-mono text-sm text-slate-500 truncate">{tx.book?.bookCode}</td>
+                    <td className="px-4 py-3 font-mono text-sm text-slate-500 truncate">{tx.bookCopy?.accessionNo || tx.book?.accessionNumbers?.[0] || '—'}</td>
                     <td className="px-4 py-3 text-sm text-slate-600">{new Date(tx.issueDate).toLocaleDateString()}</td>
                     <td className="px-4 py-3 text-center">
                       <DaysBadge days={days} />

@@ -149,7 +149,7 @@ export const ReturnedBooks = () => {
                       </div>
                     </td>
                     <td className="px-4 py-4 font-mono text-xs text-slate-500 italic">
-                      {tx.book?.bookCode}
+                      {tx.bookCopy?.accessionNo || tx.book?.accessionNumbers?.[0] || '—'}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
