@@ -1,8 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../store';
 
-// const BASE_URL = 'http://localhost:5001/api';
-export const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const BASE_URL = 'http://localhost:5001/api';
+// export const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: BASE_URL,
@@ -53,9 +53,18 @@ export const apiSlice = createApi({
       providesTags: ['Books'],
     }),
 
-    // Get all books (with optional search)
-    getBooks: builder.query<any[], string | void>({
-      query: (search) => search ? `/books?search=${encodeURIComponent(search)}` : '/books',
+    // Get books with pagination and optional search
+    getBooks: builder.query<{ books: any[]; pagination: { total: number; page: number; limit: number; totalPages: number } }, { page?: number; limit?: number; search?: string } | void>({
+      query: (params) => {
+        const page = params?.page ?? 1;
+        const limit = params?.limit ?? 10;
+        const search = params?.search ?? '';
+        const urlParams = new URLSearchParams();
+        urlParams.set('page', String(page));
+        urlParams.set('limit', String(limit));
+        if (search) urlParams.set('search', search);
+        return `/books?${urlParams.toString()}`;
+      },
       providesTags: ['Books'],
     }),
 

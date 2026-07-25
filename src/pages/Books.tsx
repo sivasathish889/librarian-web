@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
@@ -10,7 +10,7 @@ import {
   useDeleteBulkBooksMutation
 } from '../store/features/apiSlice';
 import { addToast } from '../store/features/toastSlice';
-import { Search, BookOpen, Plus, Edit2, Trash2, X } from 'lucide-react';
+import { Search, BookOpen, Plus, Edit2, Trash2, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Book {
   id: number;
@@ -23,17 +23,22 @@ interface Book {
   stock: number;
 }
 
+const LIMIT = 10;
 const emptyForm = { id: 0, title: '', author: '', publisher: '', bookCount: 1, accessionNumbersStr: '', rackNumber: '' };
 
 export const Books = () => {
   const dispatch = useDispatch();
   const [search, setSearch] = useState('');
   const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ ...emptyForm });
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
-  const { data: books = [], isLoading: loading } = useGetBooksQuery(query || undefined);
+  const { data, isLoading: loading, isFetching } = useGetBooksQuery({ page, limit: LIMIT, search: query });
+  const books = data?.books || [];
+  const pagination = data?.pagination || { page: 1, total: 0, limit: LIMIT, totalPages: 1 };
+
   const [createBook, { isLoading: creating }] = useCreateBookMutation();
   const [updateBook, { isLoading: updating }] = useUpdateBookMutation();
   const [deleteBook] = useDeleteBookMutation();
@@ -44,7 +49,13 @@ export const Books = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setQuery(search);
+    setPage(1);
   };
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   const openAdd = () => {
     setFormData({ ...emptyForm });
@@ -100,6 +111,9 @@ export const Books = () => {
       await deleteBook(id).unwrap();
       dispatch(addToast({ message: 'Book deleted successfully.', type: 'success' }));
       setSelectedIds(prev => prev.filter(i => i !== id));
+      if (books.length === 1 && page > 1) {
+        setPage(prev => prev - 1);
+      }
     } catch {
       // Error toast is handled automatically by the error middleware
     }
@@ -113,6 +127,9 @@ export const Books = () => {
       await deleteBulkBooks(selectedIds).unwrap();
       dispatch(addToast({ message: `${selectedIds.length} book(s) deleted successfully.`, type: 'success' }));
       setSelectedIds([]);
+      if (books.length <= selectedIds.length && page > 1) {
+        setPage(prev => prev - 1);
+      }
     } catch {
       // Error toast handled by middleware
     }
@@ -124,12 +141,16 @@ export const Books = () => {
     );
   };
 
+  const allCurrentSelected = books.length > 0 && books.every((b: Book) => selectedIds.includes(b.id));
+
   const toggleSelectAll = () => {
     if (books.length === 0) return;
-    if (selectedIds.length === books.length) {
-      setSelectedIds([]);
+    if (allCurrentSelected) {
+      const currentBookIds = new Set(books.map((b: Book) => b.id));
+      setSelectedIds(prev => prev.filter(id => !currentBookIds.has(id)));
     } else {
-      setSelectedIds(books.map((b: Book) => b.id));
+      const currentBookIds = books.map((b: Book) => b.id);
+      setSelectedIds(prev => Array.from(new Set([...prev, ...currentBookIds])));
     }
   };
 
@@ -212,9 +233,12 @@ export const Books = () => {
           Search
         </button>
         {query && (
-          <button type="button" onClick={() => { setSearch(''); setQuery(''); }} className="px-4 py-2.5 text-sm text-slate-500 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
+          <button type="button" onClick={() => { setSearch(''); setQuery(''); setPage(1); }} className="px-4 py-2.5 text-sm text-slate-500 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
             Clear
           </button>
+        )}
+        {isFetching && !loading && (
+          <span className="text-xs text-slate-400 animate-pulse self-center">Searching…</span>
         )}
       </form>
 
@@ -226,7 +250,7 @@ export const Books = () => {
               <th className="p-4 w-10">
                 <input
                   type="checkbox"
-                  checked={books.length > 0 && selectedIds.length === books.length}
+                  checked={books.length > 0 && allCurrentSelected}
                   onChange={toggleSelectAll}
                   className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-[#1e3a8a]"
                   title="Select All"
@@ -269,7 +293,7 @@ export const Books = () => {
                       className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-[#1e3a8a]"
                     />
                   </td>
-                  <td className="p-4 text-slate-400 text-sm">{idx + 1}</td>
+                  <td className="p-4 text-slate-400 text-sm">{(page - 1) * LIMIT + idx + 1}</td>
                   <td className="p-4 font-medium text-slate-900">{book.title}</td>
                   <td className="p-4 text-slate-600">{book.author}</td>
                   <td className="p-4 text-slate-500 text-sm">{book.publisher || '—'}</td>
@@ -307,6 +331,57 @@ export const Books = () => {
           </tbody>
         </table>
       </Card>
+
+      {/* Pagination Controls */}
+      {!loading && pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between pt-2">
+          <p className="text-sm text-slate-500 font-medium">
+            Showing <span className="text-slate-900">{(page - 1) * LIMIT + 1}</span> to{' '}
+            <span className="text-slate-900">{Math.min(page * LIMIT, pagination.total)}</span> of{' '}
+            <span className="text-slate-900">{pagination.total}</span> books
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handlePageChange(page - 1)}
+              disabled={page <= 1}
+              className="p-2.5 rounded-xl text-slate-500 hover:bg-white hover:text-blue-600 border border-transparent hover:border-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm active:scale-95 bg-slate-100"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-1.5 px-2">
+              {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                let pageNum: number;
+                if (pagination.totalPages <= 5) pageNum = i + 1;
+                else if (page <= 3) pageNum = i + 1;
+                else if (page >= pagination.totalPages - 2) pageNum = pagination.totalPages - 4 + i;
+                else pageNum = page - 2 + i;
+
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`w-10 h-10 rounded-xl text-sm font-bold transition-all shadow-sm active:scale-95 ${
+                      pageNum === page
+                        ? 'bg-[#1e3a8a] text-white'
+                        : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              onClick={() => handlePageChange(page + 1)}
+              disabled={page >= pagination.totalPages}
+              className="p-2.5 rounded-xl text-slate-500 hover:bg-white hover:text-blue-600 border border-transparent hover:border-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm active:scale-95 bg-slate-100"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
