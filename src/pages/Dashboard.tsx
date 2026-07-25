@@ -44,8 +44,15 @@ export const Dashboard = () => {
               <BookOpen className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-3xl font-bold text-slate-800">{stats.totalBooks}</p>
-              <p className="text-sm font-medium text-slate-500 mt-1">Total Books</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-3xl font-bold text-slate-800">{stats.totalBooks?.toLocaleString()}</p>
+                {stats.totalTitles !== undefined && (
+                  <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                    {stats.totalTitles?.toLocaleString()} titles
+                  </span>
+                )}
+              </div>
+              <p className="text-sm font-medium text-slate-500 mt-1">Total Books (incl. copies)</p>
             </div>
           </Card>
 

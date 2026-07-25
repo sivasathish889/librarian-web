@@ -47,6 +47,50 @@ export const apiSlice = createApi({
       providesTags: ['Students'],
     }),
 
+    // Get students with pagination and search
+    getStudents: builder.query<{ students: any[]; pagination: { total: number; page: number; limit: number; totalPages: number } }, { page?: number; limit?: number; search?: string } | void>({
+      query: (params) => {
+        const page = params?.page ?? 1;
+        const limit = params?.limit ?? 10;
+        const search = params?.search ?? '';
+        const urlParams = new URLSearchParams();
+        urlParams.set('page', String(page));
+        urlParams.set('limit', String(limit));
+        if (search) urlParams.set('search', search);
+        return `/users/students?${urlParams.toString()}`;
+      },
+      providesTags: ['Students'],
+    }),
+
+    // Create student (user)
+    createStudent: builder.mutation<any, { name: string; email: string; password?: string; registerNumber?: string; department?: string; role?: string }>({
+      query: (body) => ({
+        url: '/users',
+        method: 'POST',
+        body: { role: 'STUDENT', ...body },
+      }),
+      invalidatesTags: ['Students', 'Dashboard'],
+    }),
+
+    // Update student (user)
+    updateStudent: builder.mutation<any, { id: number; name: string; email: string; password?: string; registerNumber?: string; department?: string }>({
+      query: ({ id, ...body }) => ({
+        url: `/users/${id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['Students', 'Dashboard'],
+    }),
+
+    // Delete student (user)
+    deleteStudent: builder.mutation<any, number>({
+      query: (id) => ({
+        url: `/users/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Students', 'Dashboard'],
+    }),
+
     // Book search (used by IssueBook page)
     searchBooks: builder.query<any[], string>({
       query: (search) => `/books?search=${encodeURIComponent(search)}`,
@@ -203,6 +247,10 @@ export const apiSlice = createApi({
 
 export const {
   useLazySearchStudentsQuery,
+  useGetStudentsQuery,
+  useCreateStudentMutation,
+  useUpdateStudentMutation,
+  useDeleteStudentMutation,
   useLazySearchBooksQuery,
   useIssueBookMutation,
   useReturnBookMutation,

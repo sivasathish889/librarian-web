@@ -12,6 +12,7 @@ import { MissingBooks } from './pages/MissingBooks';
 import { Books } from './pages/Books';
 import { IssuedBooks } from './pages/IssuedBooks';
 import { ReturnedBooks } from './pages/ReturnedBooks';
+import { Students } from './pages/Students';
 import { ToastContainer } from './components/ui/Toast';
 import type { JSX } from 'react';
 
@@ -31,6 +32,7 @@ function App() {
         <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route index element={<Dashboard />} />
 
+          <Route path="students" element={<Students />} />
           <Route path="transactions" element={<Transactions />} />
           <Route path="issue-book" element={<IssueBook />} />
           <Route path="return-book" element={<ReturnBook />} />

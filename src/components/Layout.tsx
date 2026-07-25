@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from '../store/store';
 import { logout } from '../store/features/authSlice';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { BookOpen, LayoutDashboard, CheckSquare, RefreshCw, XSquare, LogOut, Library, BookMarked, RotateCcw } from 'lucide-react';
+import { BookOpen, LayoutDashboard, CheckSquare, RefreshCw, XSquare, LogOut, Library, BookMarked, RotateCcw, Users } from 'lucide-react';
 
 export const Layout: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -12,6 +12,7 @@ export const Layout: React.FC = () => {
 
   const navItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { name: 'Students', path: '/students', icon: Users },
     { name: 'Books', path: '/books', icon: Library },
     { name: 'Issue Book', path: '/issue-book', icon: CheckSquare },
     { name: 'Return Book', path: '/return-book', icon: RefreshCw },
